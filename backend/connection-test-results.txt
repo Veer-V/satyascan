@@ -1,0 +1,30 @@
+====================================
+MongoDB Connection Test - 2025-12-13T04:58:43.021Z
+====================================
+
+Test 1: Environment Variables
+✅ MONGODB_URI is configured
+   URI: mongodb+srv://mdibransiddique01:***@cluster0.4h7xoyg.mongodb.net/satyascan?retryWrites=true&w=majority&appName=Cluster0
+
+Test 2: MongoDB Connection
+   Attempting to connect...
+❌ CONNECTION FAILED
+   Error: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/
+   Error name: MongooseServerSelectionError
+
+🔧 Troubleshooting:
+1. IP Whitelisting:
+   - Go to MongoDB Atlas > Network Access
+   - Add your current IP or use 0.0.0.0/0 (for development)
+   - Wait 2-3 minutes for changes to take effect
+
+2. Authentication:
+   - Verify username: mdibransiddique01
+   - Check password in .env file
+   - Go to MongoDB Atlas > Database Access
+
+3. Connection String:
+   - Verify .env file has correct MONGODB_URI
+   - Special characters (@, #) should be URL-encoded
+
+For detailed help: backend/FIX_DATABASE_CONNECTION.md

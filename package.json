@@ -1,0 +1,22 @@
+{
+    "name": "satyascan-fullstack",
+    "version": "1.0.0",
+    "description": "SatyaScan ML Scanning Application - Full Stack",
+    "scripts": {
+        "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+        "start:backend": "cd backend && npm run dev",
+        "start:frontend": "cd frontend && npm run dev",
+        "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    },
+    "keywords": [
+        "satyascan",
+        "ml",
+        "scanning",
+        "fullstack"
+    ],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

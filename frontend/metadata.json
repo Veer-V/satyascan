@@ -1,0 +1,8 @@
+{
+  "name": "ml scaning ui/ux",
+  "description": "AI-powered cosmetic authenticity scanner using Gemini API.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
