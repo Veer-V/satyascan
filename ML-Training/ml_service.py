@@ -51,14 +51,19 @@ _model = None
 
 def load_model():
     """Load the Keras model (cached globally)"""
-    global _model
+    global _model, MODEL_PATH
     
     if _model is None:
         if not MODEL_PATH.exists():
-            raise FileNotFoundError(f"Model file not found at: {MODEL_PATH}")
+            # Check parent directory fallback
+            PARENT_MODEL_PATH = Path(__file__).parent.parent / 'cosmetic_fake_real_model.keras'
+            if PARENT_MODEL_PATH.exists():
+                MODEL_PATH = PARENT_MODEL_PATH
+            else:
+                raise FileNotFoundError(f"Model file not found at: {MODEL_PATH} or {PARENT_MODEL_PATH}")
         
         try:
-            _model = tf.keras.models.load_model(str(MODEL_PATH))
+            _model = tf.keras.models.load_model(str(MODEL_PATH), compile=False)
             print(f"✓ Model loaded: {MODEL_PATH.name}", file=sys.stderr)
         except Exception as e:
             raise Exception(f"Failed to load model: {str(e)}")

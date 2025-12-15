@@ -14,7 +14,7 @@ def load_model():
     global model
     if model is None:
         try:
-            model = tf.keras.models.load_model(str(MODEL_PATH))
+            model = tf.keras.models.load_model(str(MODEL_PATH), compile=False)
             print(f"Model loaded successfully from {MODEL_PATH}", file=sys.stderr)
         except Exception as e:
             print(f"Error loading model: {e}", file=sys.stderr)

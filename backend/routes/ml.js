@@ -46,11 +46,33 @@ router.post('/analyze', upload.single('image'), async (req, res) => {
   const imagePath = req.file.path;
   const pythonScript = path.join(__dirname, '../../ML-Training/ml_service.py');
 
+  if (!fs.existsSync(pythonScript)) {
+    console.error(`ML script not found at: ${pythonScript}`);
+    return res.status(500).json({
+      error: 'ML script not found',
+      details: `The script expected at ${pythonScript} does not exist.`
+    });
+  }
+
   console.log(`🔍 Analyzing image: ${imagePath}`);
 
   try {
-    // Call Python script for ML prediction
-    const python = spawn('python', [pythonScript, imagePath]);
+    // Determine Python executable
+    const pythonCommand = process.env.PYTHON_PATH || (process.platform === 'win32' ? 'python' : 'python3');
+
+    console.log(`Using Python: ${pythonCommand}`);
+    const python = spawn(pythonCommand, [pythonScript, imagePath]);
+
+    // Handle spawn errors (e.g., python not found)
+    python.on('error', (err) => {
+      console.error('Failed to start Python process:', err);
+      if (!res.headersSent) {
+        res.status(500).json({
+          error: 'Failed to start ML analysis',
+          details: 'Python is likely not installed or not in the system path.'
+        });
+      }
+    });
 
     let dataString = '';
     let errorString = '';
@@ -73,9 +95,17 @@ router.post('/analyze', upload.single('image'), async (req, res) => {
       if (code !== 0) {
         console.error(`Python process exited with code ${code}`);
         console.error(`Error output: ${errorString}`);
+
+        let detailedError = errorString;
+        if (errorString.includes('ModuleNotFoundError')) {
+          detailedError = 'A required Python module was not found. Please check the backend setup.';
+        } else if (errorString.includes('FileNotFoundError')) {
+          detailedError = 'The ML model file was not found. Please ensure it exists.';
+        }
+
         return res.status(500).json({
           error: 'ML analysis failed',
-          details: errorString
+          details: detailedError
         });
       }
 
@@ -88,7 +118,7 @@ router.post('/analyze', upload.single('image'), async (req, res) => {
         console.error('Raw output:', dataString);
         res.status(500).json({
           error: 'Failed to parse analysis results',
-          details: parseError.message
+          details: 'The Python script returned an invalid format.'
         });
       }
     });
@@ -110,13 +140,13 @@ router.post('/analyze', upload.single('image'), async (req, res) => {
 router.get('/ml-status', (req, res) => {
   const modelPath = path.join(__dirname, '../../ML-Training/cosmetic_fake_real_model.keras');
   const pythonScript = path.join(__dirname, '../../ML-Training/ml_service.py');
-  
+
   const status = {
     modelExists: fs.existsSync(modelPath),
     scriptExists: fs.existsSync(pythonScript),
     ready: fs.existsSync(modelPath) && fs.existsSync(pythonScript)
   };
-  
+
   res.json(status);
 });
 
