@@ -3,10 +3,10 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/api/$1"
+            "destination": "/backend/server.js"
         },
         {
-            "source": "/(.*)",
+            "source": "/((?!api/.*).*)",
             "destination": "/frontend/$1"
         }
     ],
@@ -21,16 +21,6 @@
         {
             "src": "backend/server.js",
             "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/backend/server.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/frontend/$1"
         }
     ]
 }
